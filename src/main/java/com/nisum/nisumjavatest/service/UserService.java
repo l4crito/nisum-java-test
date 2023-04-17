@@ -4,6 +4,7 @@ import com.nisum.nisumjavatest.entity.User;
 import com.nisum.nisumjavatest.exception.BusinessException;
 import com.nisum.nisumjavatest.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,17 +19,17 @@ public class UserService {
     public User createUser(User user) throws BusinessException {
         // Validar que el correo tenga el formato correcto
         if (!isValidEmail(user.getEmail())) {
-            throw new BusinessException("Correo inválido");
+            throw new BusinessException("Correo inválido", HttpStatus.BAD_REQUEST);
         }
 
         // Validar que la contraseña tenga el formato correcto
         if (!isValidPassword(user.getPassword())) {
-            throw new BusinessException("Contraseña inválida");
+            throw new BusinessException("Contraseña inválida", HttpStatus.BAD_REQUEST);
         }
 
         // Validar que el correo no esté registrado previamente
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new BusinessException("El correo ya está registrado");
+            throw new BusinessException("El correo ya está registrado",HttpStatus.CONFLICT);
         }
 
         // Generar un token aleatorio para el usuario
