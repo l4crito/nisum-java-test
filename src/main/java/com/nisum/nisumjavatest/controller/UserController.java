@@ -1,5 +1,6 @@
 package com.nisum.nisumjavatest.controller;
 
+import com.nisum.nisumjavatest.dto.UserDto;
 import com.nisum.nisumjavatest.entity.User;
 import com.nisum.nisumjavatest.exception.BusinessException;
 import com.nisum.nisumjavatest.service.UserService;
@@ -32,14 +33,14 @@ public class UserController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody UserDto user) {
         User newUser = userService.createUser(user);
         newUser.setPassword("");
         return newUser;
     }
 
     @PutMapping()
-    public User updateUser(@Valid @RequestBody User user) {
+    public User updateUser(@Valid @RequestBody UserDto user) {
         User updatedUser = userService.updateUser(user);
         updatedUser.setPassword("");
         return updatedUser;

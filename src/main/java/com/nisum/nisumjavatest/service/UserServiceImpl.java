@@ -1,5 +1,6 @@
 package com.nisum.nisumjavatest.service;
 
+import com.nisum.nisumjavatest.dto.UserDto;
 import com.nisum.nisumjavatest.entity.User;
 import com.nisum.nisumjavatest.exception.BusinessException;
 import com.nisum.nisumjavatest.repository.UserRepository;
@@ -28,23 +29,23 @@ public class UserServiceImpl implements UserService {
     @Value("${password.regex}")
     private String passwordRegex;
 
-    public User createUser(User user) throws BusinessException {
-        if (!isValidEmail(user.getEmail())) {
+    public User createUser(UserDto userDto) throws BusinessException {
+        if (!isValidEmail(userDto.getEmail())) {
             throw new BusinessException("Correo inválido", HttpStatus.BAD_REQUEST);
         }
 
-        if (!isValidPassword(user.getPassword())) {
+        if (!isValidPassword(userDto.getPassword())) {
             throw new BusinessException("Contraseña inválida", HttpStatus.BAD_REQUEST);
         }
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new BusinessException("El correo ya está registrado",HttpStatus.CONFLICT);
         }
-
+        User user = modelMapper.map(userDto,User.class);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        String token = JwtUtil.generateToken(user.getEmail());
+        String token = JwtUtil.generateToken(userDto.getEmail());
         user.setToken(token);
 
         LocalDateTime now = LocalDateTime.now();
@@ -68,34 +69,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(User user) throws BusinessException {
-        if (!isValidEmail(user.getEmail())) {
+    public User updateUser(UserDto userDto) throws BusinessException {
+        if (!isValidEmail(userDto.getEmail())) {
             throw new BusinessException("Correo inválido", HttpStatus.BAD_REQUEST);
         }
 
-        if (!isValidPassword(user.getPassword())) {
+        if (!isValidPassword(userDto.getPassword())) {
             throw new BusinessException("Contraseña inválida", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<User> currentUser = userRepository.findById(user.getId());
+        Optional<User> currentUser = userRepository.findById(userDto.getId());
 
         if (!currentUser.isPresent()) {
             throw new BusinessException("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
 
-        if ( user.getEmail()!=null && !user.getEmail().equals(currentUser.get().getEmail()) ) {
-            if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if ( userDto.getEmail()!=null && !userDto.getEmail().equals(currentUser.get().getEmail()) ) {
+            if (userRepository.findByEmail(userDto.getEmail()).isPresent()) {
                 throw new BusinessException("El correo ya está registrado",HttpStatus.CONFLICT);
             }
         }
 
+
+        modelMapper.map(userDto, currentUser.get());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        currentUser.get().setPassword(passwordEncoder.encode(userDto.getPassword()));
 
-        String token = JwtUtil.generateToken(user.getEmail());
-        user.setToken(token);
-
-        modelMapper.map(user, currentUser.get());
+        String token = JwtUtil.generateToken(userDto.getEmail());
+        currentUser.get().setToken(token);
         currentUser.get().setModified(LocalDateTime.now());
 
         return userRepository.save(currentUser.get());
