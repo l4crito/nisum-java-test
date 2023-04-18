@@ -3,6 +3,7 @@ package com.nisum.nisumjavatest.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,12 +26,15 @@ public class User {
     private UUID id;
 
     @Column(nullable = false)
+    @NotNull
     private String name;
 
     @Column(nullable = false, unique = true)
+    @NotNull
     private String email;
 
     @Column(nullable = false)
+    @NotNull
     private String password;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

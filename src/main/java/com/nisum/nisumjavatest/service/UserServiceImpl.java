@@ -3,10 +3,12 @@ package com.nisum.nisumjavatest.service;
 import com.nisum.nisumjavatest.entity.User;
 import com.nisum.nisumjavatest.exception.BusinessException;
 import com.nisum.nisumjavatest.repository.UserRepository;
+import com.nisum.nisumjavatest.utils.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -39,7 +41,10 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("El correo ya está registrado",HttpStatus.CONFLICT);
         }
 
-        String token = UUID.randomUUID().toString();
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        String token = JwtUtil.generateToken(user.getEmail());
         user.setToken(token);
 
         LocalDateTime now = LocalDateTime.now();
@@ -83,6 +88,12 @@ public class UserServiceImpl implements UserService {
                 throw new BusinessException("El correo ya está registrado",HttpStatus.CONFLICT);
             }
         }
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        String token = JwtUtil.generateToken(user.getEmail());
+        user.setToken(token);
 
         modelMapper.map(user, currentUser.get());
         currentUser.get().setModified(LocalDateTime.now());
