@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("El correo ya está registrado",HttpStatus.CONFLICT);
         }
         User user = modelMapper.map(userDto,User.class);
+        user.setId(userDto.getId() == null ? UUID.randomUUID() : userDto.getId());
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
