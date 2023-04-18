@@ -18,14 +18,18 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping()
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@Valid @RequestBody User user) {
        return userService.createUser(user);
     }
-    @GetMapping()
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    @PutMapping()
+    public User updateUser(@Valid @RequestBody User user) {
+        return userService.updateUser(user);
     }
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable UUID id) throws BusinessException {

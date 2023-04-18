@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,5 +52,4 @@ public class User {
     @Column(nullable = false)
     private String token;
 
-    // Getters and setters
 }

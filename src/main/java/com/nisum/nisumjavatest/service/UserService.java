@@ -11,5 +11,8 @@ public interface UserService {
 
     List<User> getAllUsers();
 
-    void deleteUser(UUID id);
+    void deleteUser(UUID id) throws BusinessException;
+
+    User updateUser(User user) throws BusinessException;
+
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "phone")
@@ -29,6 +28,5 @@ public class Phone {
     @JsonBackReference
     private User user;
 
-    // Constructors, getters and setters
 
 }
